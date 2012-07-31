@@ -224,7 +224,10 @@ def getCmdName(pid, split_args):
     cmdline = open(proc+"%d/cmdline" % pid, "rt").read().split("\0")
     if cmdline[-1] == '' and len(cmdline) > 1:
         cmdline = cmdline[:-1]
-    path = os.path.realpath(proc+"%d/exe" % pid) #exception for kernel threads
+    if os.path.islink(cmdline[0]):
+        path = cmdline[0]
+    else:
+        path = os.path.realpath(proc+"%d/exe" % pid) #exception for kernel threads
     if split_args:
         return " ".join(cmdline)
     if path.endswith(" (deleted)"):
